@@ -5,6 +5,6 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     QTextStream cout(stdout, QIODevice::WriteOnly);
-    cout << "hello" << endl;
+    cout << "hello world" << endl;
     return a.exec();
 }
