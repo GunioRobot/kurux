@@ -8,11 +8,11 @@ QT       += core
 
 QT       -= gui
 
-TARGET = kurux
+TARGET    = kurux
 CONFIG   += console
 CONFIG   -= app_bundle
 
-TEMPLATE = app
+TEMPLATE  = app
 
 
-SOURCES += main.cpp
+SOURCES  += main.cpp
