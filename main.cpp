@@ -1,5 +1,4 @@
 /*
-
 Copyright (c) 2010 Albert Kurucz.
 
 This file, main.c is part of Kurux.
@@ -19,8 +18,9 @@ along with Kurux.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-//#include <QtCore/QCoreApplication>
+#include <QtCore/QCoreApplication>
 #include <QTextStream>
+#include <QtNetwork/QTcpSocket>
 
 void foo(void){
     throw "Error in foo";
@@ -28,8 +28,7 @@ void foo(void){
 
 int main(int argc, char *argv[])
 {
-    //QCoreApplication a(argc, argv);
-    //a.exec();
+    QCoreApplication a(argc, argv);
     QTextStream cout(stdout, QIODevice::WriteOnly);
     QTextStream cerr(stderr, QIODevice::WriteOnly);
     cout << "hello world" << endl;
@@ -37,7 +36,39 @@ int main(int argc, char *argv[])
         foo();
     }catch(const char* errorMessage) {
         cerr << errorMessage << endl;
-        return 1;
-    }    
-    cout << "end" << endl;
+    }
+    cout << "network test" << endl;
+    try{
+        QTcpSocket s;
+        s.connectToHost("192.168.0.73", 5025, QTcpSocket::ReadWrite);
+        if(!s.waitForConnected(2000)){
+            throw "cannot connect";
+        }
+        cout << "connected." << endl;
+        s.write("*IDN?\n");
+        cout << "waiting to write." << endl;
+        if(!s.waitForBytesWritten(1000)){
+            throw "cannot write";
+        }
+        cout << "writing done." << endl;
+        cout << "waiting to read" << endl;
+        if(!s.waitForReadyRead(2000)){
+            throw "cannot read";
+        }
+        int a=s.bytesAvailable();
+        cout << "available: " << a << endl;
+        cout << "reading..." << endl;
+        QByteArray r=s.readLine(255);
+        cout << "reading done. Length: " << r.length() << endl;
+        QByteArray rt=r.trimmed();
+        cout << "Trimmed length: " << rt.length() << endl;
+        if(rt.length() > 0){
+            cout << rt << endl;
+        }
+    }catch(const char* errorMessage) {
+        cerr << errorMessage << endl;
+        //return 1;
+    }
+    cout << "end." << endl;
+    a.exec();
 }
