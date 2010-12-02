@@ -18,11 +18,16 @@ along with Kurux.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-#include <QtCore/QCoreApplication>
+//#include <QtCore/QCoreApplication>
 #include <QTextStream>
 #include <QtNetwork/QTcpSocket>
 #include <QHostAddress>
 #include <tcpinstrument.h>
+
+#include <QtGui/QApplication>
+#include <QtGui/QPushButton>
+#include <QtScript/QScriptEngine>
+#include <QtGui/QMessageBox>
 
 void foo(void){
     throw "Error in foo";
@@ -30,7 +35,8 @@ void foo(void){
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+//    QCoreApplication a(argc, argv);
+    QApplication a(argc, argv);
     QTextStream cout(stdout, QIODevice::WriteOnly);
     QTextStream cerr(stderr, QIODevice::WriteOnly);
     cout << "hello world" << endl;
@@ -72,13 +78,29 @@ int main(int argc, char *argv[])
         cerr << errorMessage << endl;
     }
 
-    cout << "TcpInstrument test" << endl;
-    try{
-        TcpInstrument *inst = new TcpInstrument(QHostAddress("192.168.0.72"));
-        cout << inst->sendReceive("*IDN?\n").trimmed() << endl;
-    }catch(const char* errorMessage) {
-        cerr << errorMessage << endl;
+//    cout << "TcpInstrument test" << endl;
+//    try{
+//        TcpInstrument *inst = new TcpInstrument(QHostAddress("192.168.0.72"));
+//        cout << inst->sendReceive("*IDN?\n").trimmed() << endl;
+//    }catch(const char* errorMessage) {
+//        cerr << errorMessage << endl;
+//    }
+
+    cout << "Script test" << endl;
+    QScriptEngine engine;
+    QPushButton button;
+    QScriptValue scriptButton = engine.newQObject(&button);
+    engine.globalObject().setProperty("button", scriptButton);
+    QByteArray script="button.text = 'Hello World!';\nbutton.styleSheet = 'font-style: italic';\nbutton.show();";
+    QScriptValue result = engine.evaluate(script);
+    if (result.isError()) {
+        QMessageBox::critical(0, "Hello Script",
+                              QString::fromLatin1("%0: %1")
+                              .arg(result.property("lineNumber").toInt32())
+                              .arg(result.toString()));
+        return -1;
     }
+
     cout << "end." << endl;
     a.exec();
 }

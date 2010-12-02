@@ -5,8 +5,9 @@
 #-------------------------------------------------
 
 QT       += core
-QT       -= gui
+QT       += gui
 QT       += network
+QT       += script
 
 TARGET    = kurux
 CONFIG   += console
