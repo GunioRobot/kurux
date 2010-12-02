@@ -70,13 +70,15 @@ int main(int argc, char *argv[])
         socket.close();
     }catch(const char* errorMessage) {
         cerr << errorMessage << endl;
-        //return 1;
     }
 
     cout << "TcpInstrument test" << endl;
-    TcpInstrument *inst=new TcpInstrument(QHostAddress("192.168.0.72"));
-
-    cout << inst->sendReceive("*IDN?\n").trimmed() << endl;
+    try{
+        TcpInstrument *inst = new TcpInstrument(QHostAddress("192.168.0.72"));
+        cout << inst->sendReceive("*IDN?\n").trimmed() << endl;
+    }catch(const char* errorMessage) {
+        cerr << errorMessage << endl;
+    }
     cout << "end." << endl;
     a.exec();
 }
